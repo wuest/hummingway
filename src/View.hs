@@ -93,17 +93,17 @@ admin rs ts = html $ do
 raceAdmin :: Maybe Model.RaceInfo -> Maybe Model.TrackerInfo -> Html
 raceAdmin Nothing _ = html $ H.body $ H.span "Game not found"
 raceAdmin _ Nothing = html $ H.body $ H.span "Tracker not found for game!  Database is likely corrupted."
-raceAdmin (Just (rid, r, pl)) (Just (tid, t, ris)) = html $ do
+raceAdmin (Just (rid, _r, pl)) (Just (_tid, _t, ris)) = html $ do
     headerAdmin
     H.body ! class_ "admin" ! onload (jsCall "startTracker" (SQL.fromSqlKey rid)) $ H.table $
-        tr $ forM_ pl $ \(pi, p') ->
-            table ! A.id (stringValue $ "racer_" ++ show (SQL.fromSqlKey pi)) $ do
+        tr $ forM_ pl $ \(pid, p') ->
+            table ! A.id (stringValue $ "racer_" ++ show (SQL.fromSqlKey pid)) $ do
                 tr $ caption $ toHtml $ Model.playerName p'
-                tr $ td $ racePlayerAdmin ris pi
+                tr $ td $ racePlayerAdmin ris pid
 
 racePlayerAdmin :: [Model.RowInfo] -> Model.PlayerId -> Html
 racePlayerAdmin ris pid = table $ forM_ ris $
-    \(rid, _r, ci) -> tr $ forM_ ci $
+    \(_rid, _r, ci) -> tr $ forM_ ci $
         \(cid, c) -> td ! A.id (stringValue $ show (SQL.fromSqlKey cid)) ! A.class_ "inactive" ! onclick (jsCall2 "toggle" (SQL.fromSqlKey cid) (SQL.fromSqlKey pid)) $ img ! src (stringValue $ Model.cellIcon c)
 
 trackerAdmin :: Maybe Model.TrackerInfo -> Html
