@@ -72,7 +72,7 @@ function trackerRender(canvas, json)
 
 function trackerUpdate(canvas, json)
 {
-  var state = json[2]["playerState"];
+  var state = json[3]["playerState"];
   if(state == "")
   {
     state = [];
