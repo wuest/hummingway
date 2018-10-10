@@ -23,7 +23,7 @@ data Options = Options { optVerbose :: Bool
 defaultOptions :: Options
 defaultOptions = Options { optVerbose = False
                          , webPort    = 3000
-                         , dbLocation = Dir.getXdgDirectory Dir.XdgData "rando-tracker"
+                         , dbLocation = Dir.getXdgDirectory Dir.XdgData "hummingway"
                          }
 
 version :: String
