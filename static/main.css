@@ -1,5 +1,4 @@
 .admin caption            { background: #ccd; font-weight:bold; }
-.admin tr                 { background:1px solid gray; }
 .admin tr:nth-child(even) { background:#eee; }
 .admin tr:nth-child(odd)  { background:#fff; }
 .admin table              { margin-bottom:2ex; padding-bottom:2ex; }
@@ -12,4 +11,7 @@ body.tracker              { background:#f0f; }
 .tracker table tr         { border-spacing:0px; padding:0px; }
 .tracker table tr td      { border-spacing:0px; padding:0px; }
 
-table tr td.inactive img { -webkit-filter: grayscale(100%) brightness(50%); filter: grayscale(100%) brightness(50%); }
+table tr td.inactive img  { -webkit-filter: grayscale(100%) brightness(50%); filter: grayscale(100%) brightness(50%); }
+
+.admin tr:nth-child(even) { background:#ddd; }
+.admin tr:nth-child(odd)  { background:#ccc; }

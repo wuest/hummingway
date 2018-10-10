@@ -49,9 +49,9 @@ race (Just (_i, _r, pl)) = html $ do
 
 racer :: Maybe Model.PlayerTracker -> Html
 racer Nothing = H.body $ H.span "Invalid racer"
-racer (Just (pid, tid, _pl)) = html $ do
+racer (Just (pid, tid, key, _pl)) = html $ do
     headerNormal
-    H.body ! class_ "tracker" ! onload (jsCall2 "startTracker" (SQL.fromSqlKey pid) (SQL.fromSqlKey tid)) $ H.div ! A.id (stringValue "trackerCanvas") $ ""
+    H.body ! class_ "tracker" ! A.style (stringValue ("background:" ++ key ++ ";")) ! onload (jsCall2 "startTracker" (SQL.fromSqlKey pid) (SQL.fromSqlKey tid)) $ H.div ! A.id (stringValue "trackerCanvas") $ ""
 
 -- Admin Partials
 

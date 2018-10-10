@@ -24,7 +24,7 @@ import Control.Monad.Logger         ( NoLoggingT )
 import Control.Monad.Reader         ( ReaderT, ask )
 import Control.Monad.Trans.Resource ( ResourceT )
 
-import Data.Text                    ( Text, pack )
+import Data.Text                    ( Text, pack, unpack )
 import Data.Time                    ( UTCTime, getCurrentTime )
 import GHC.Generics                 ( Generic )
 
@@ -80,7 +80,7 @@ newtype Config = Config { dbPath :: String }
 
 type RaceInfo = (RaceId, Race, [PlayerInfo])
 type PlayerInfo = (PlayerId, Player)
-type PlayerTracker = (PlayerId, TrackerId, Player)
+type PlayerTracker = (PlayerId, TrackerId, String, Player)
 type TrackerInfo = (TrackerId, Tracker, [RowInfo])
 type RowInfo = (RowId, Row, [CellInfo])
 type CellInfo = (CellId, Cell)
@@ -132,17 +132,23 @@ player i = do
     Config{dbPath} <- ask
     let i' = toSqlKey (fromIntegral i) :: PlayerId
     pe <- liftIO $ transactionally dbPath $ get i'
-    tid <- playerTrackerId pe
-    return $ tid >>= \t' ->
-        pe >>= Just . (,,) i' t'
+    info <- playerTrackerInfo pe
+    return $ info >>= \(t', r') ->
+        pe >>= Just . (,,,) i' t' r'
 
-playerTrackerId :: Maybe Player -> ReaderT Config IO (Maybe TrackerId)
-playerTrackerId Nothing = return Nothing
-playerTrackerId (Just pl) = do
+playerTrackerInfo :: Maybe Player -> ReaderT Config IO (Maybe (TrackerId, String))
+playerTrackerInfo Nothing = return Nothing
+playerTrackerInfo (Just pl) = do
     Config{dbPath} <- ask
     r <- liftIO $ transactionally dbPath $ get $ playerRace pl
     let t = raceTracker <$> r
-    return t
+        k = raceGameKey <$> r
+    return $ playerTrackerInfo' t k
+
+playerTrackerInfo' :: Maybe TrackerId -> Maybe Text -> Maybe (TrackerId, String)
+playerTrackerInfo' Nothing _ = Nothing
+playerTrackerInfo' _ Nothing = Nothing
+playerTrackerInfo' (Just t) (Just k) = Just (t, unpack k)
 
 trackers :: ReaderT Config IO [TrackerInfo]
 trackers = do
